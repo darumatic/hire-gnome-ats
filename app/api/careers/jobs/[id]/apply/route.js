@@ -522,6 +522,21 @@ async function postCareerSiteApplication(req, { params }) {
 				}
 			});
 
+			const applicationAnswers = (Array.isArray(application.applicationAnswers) ? application.applicationAnswers : []);
+			const answersForSubmission = (Array.isArray(jobOrder.applicationQuestions) ? jobOrder.applicationQuestions : [])
+				.map((q) => {
+					const match = applicationAnswers.find((a) => a.questionId === q.id);
+					return { question: q.label, answer: asTrimmedString(match?.answer) || '' };
+				})
+				.filter((a) => a.answer);
+
+			if (answersForSubmission.length > 0) {
+				await tx.submission.update({
+					where: { id: createdSubmission.id },
+					data: { customFields: { applicationAnswers: answersForSubmission } }
+				});
+			}
+
 			return {
 				candidate,
 				submission: createdSubmission,
