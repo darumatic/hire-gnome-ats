@@ -54,8 +54,8 @@ const careerApplicationSchema = z.object({
 		}),
 	mobile: z.string().trim().min(1, 'Mobile phone is required.'),
 	zipCode: z.string().trim().min(1, 'Zip code is required.'),
-	currentJobTitle: z.string().trim().min(1, 'Current job title is required.'),
-	currentEmployer: z.string().trim().min(1, 'Current employer is required.'),
+	currentJobTitle: z.string().trim().optional().or(z.literal('')),
+	currentEmployer: z.string().trim().optional().or(z.literal('')),
 	linkedinUrl: optionalUrl
 });
 

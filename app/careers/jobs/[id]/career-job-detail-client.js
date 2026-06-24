@@ -111,8 +111,6 @@ export default function CareerJobDetailClient({ job }) {
 					form.email.trim() &&
 					form.mobile.trim() &&
 					form.zipCode.trim() &&
-					form.currentJobTitle.trim() &&
-					form.currentEmployer.trim() &&
 					resumeFile &&
 					requiredQuestionsAnswered
 			),
@@ -330,23 +328,21 @@ export default function CareerJobDetailClient({ job }) {
 
 						<div className="career-apply-grid-2">
 							<label>
-								<span>Current Title *</span>
+								<span>Current Title</span>
 								<input
 									value={form.currentJobTitle}
 									onChange={(event) =>
 										setForm((current) => ({ ...current, currentJobTitle: event.target.value }))
 									}
-									required
 								/>
 							</label>
 							<label>
-								<span>Current Employer *</span>
+								<span>Current Employer</span>
 								<input
 									value={form.currentEmployer}
 									onChange={(event) =>
 										setForm((current) => ({ ...current, currentEmployer: event.target.value }))
 									}
-									required
 								/>
 							</label>
 						</div>
