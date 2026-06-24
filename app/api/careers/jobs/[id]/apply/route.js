@@ -68,7 +68,7 @@ function escapeHtml(value) {
 		.replace(/'/g, '&#39;');
 }
 
-function buildWebApplicationCandidateNoteContent({ jobOrderTitle, application, normalizedEmail, resumeFileName }) {
+function buildWebApplicationCandidateNoteContent({ jobOrderTitle, application, normalizedEmail, resumeFileName, questions }) {
 	const lines = [
 		`Applied to ${asTrimmedString(jobOrderTitle) || '-'} via public career site.`,
 		`Applied At: ${new Date().toISOString()}`,
@@ -80,6 +80,15 @@ function buildWebApplicationCandidateNoteContent({ jobOrderTitle, application, n
 		`LinkedIn: ${asTrimmedString(application.linkedinUrl) || '-'}`,
 		`Resume File: ${asTrimmedString(resumeFileName) || '-'}`
 	];
+	const answers = Array.isArray(application.applicationAnswers) ? application.applicationAnswers : [];
+	if (Array.isArray(questions) && questions.length > 0) {
+		lines.push('');
+		lines.push('Application Questions:');
+		for (const q of questions) {
+			const answer = answers.find((a) => a.questionId === q.id);
+			lines.push(`  ${q.label}: ${asTrimmedString(answer?.answer) || '-'}`);
+		}
+	}
 	return lines.join('\n');
 }
 
@@ -199,6 +208,18 @@ function hasHoneypotContent(value) {
 	return Boolean(asTrimmedString(value));
 }
 
+function parseApplicationAnswers(value) {
+	try {
+		const parsed = JSON.parse(value || '[]');
+		if (!Array.isArray(parsed)) return [];
+		return parsed.filter(
+			(a) => a && typeof a.questionId === 'string' && typeof a.answer === 'string'
+		);
+	} catch {
+		return [];
+	}
+}
+
 function parseEpochMs(value) {
 	const raw = asTrimmedString(value);
 	if (!raw) return 0;
@@ -278,6 +299,7 @@ async function parseApplicationInput(req) {
 				currentJobTitle: asTrimmedString(formData.get('currentJobTitle')),
 				currentEmployer: asTrimmedString(formData.get('currentEmployer')),
 				linkedinUrl: asTrimmedString(formData.get('linkedinUrl')),
+				applicationAnswers: parseApplicationAnswers(asTrimmedString(formData.get('applicationAnswers'))),
 				[HONEYPOT_FIELD]: asTrimmedString(formData.get(HONEYPOT_FIELD)),
 				[FORM_STARTED_AT_FIELD]: asTrimmedString(formData.get(FORM_STARTED_AT_FIELD))
 			},
@@ -378,6 +400,7 @@ async function postCareerSiteApplication(req, { params }) {
 				title: true,
 				ownerId: true,
 				divisionId: true,
+				applicationQuestions: true,
 				client: {
 					select: {
 						name: true
@@ -511,7 +534,8 @@ async function postCareerSiteApplication(req, { params }) {
 						jobOrderTitle: jobOrder.title,
 						application,
 						normalizedEmail,
-						resumeFileName: resumeFile?.name || ''
+						resumeFileName: resumeFile?.name || '',
+						questions: Array.isArray(jobOrder.applicationQuestions) ? jobOrder.applicationQuestions : []
 					})
 				}
 			});

@@ -93,7 +93,15 @@ export default function CareerJobDetailClient({ job }) {
 	const [resumeFile, setResumeFile] = useState(null);
 	const [resumeInputKey, setResumeInputKey] = useState(0);
 	const [submitState, setSubmitState] = useState({ submitting: false });
+	const [answers, setAnswers] = useState({});
 	const hasValidLinkedinUrl = isValidOptionalHttpUrl(form.linkedinUrl);
+
+	const questions = Array.isArray(job.applicationQuestions) ? job.applicationQuestions : [];
+
+	const requiredQuestionsAnswered = useMemo(
+		() => questions.filter((q) => q.required).every((q) => String(answers[q.id] || '').trim()),
+		[questions, answers]
+	);
 
 	const canSubmit = useMemo(
 		() =>
@@ -105,9 +113,10 @@ export default function CareerJobDetailClient({ job }) {
 					form.zipCode.trim() &&
 					form.currentJobTitle.trim() &&
 					form.currentEmployer.trim() &&
-					resumeFile
+					resumeFile &&
+					requiredQuestionsAnswered
 			),
-		[form, resumeFile]
+		[form, resumeFile, requiredQuestionsAnswered]
 	);
 
 	useEffect(() => {
@@ -138,6 +147,10 @@ export default function CareerJobDetailClient({ job }) {
 			toast.error('Complete all required fields and upload your resume before submitting.');
 			return;
 		}
+		if (!requiredQuestionsAnswered) {
+			toast.error('Please answer all required application questions before submitting.');
+			return;
+		}
 		if (form.linkedinUrl.trim() && !hasValidLinkedinUrl) {
 			toast.error('Enter a valid LinkedIn URL, including http:// or https://.');
 			return;
@@ -164,6 +177,12 @@ export default function CareerJobDetailClient({ job }) {
 			payload.set('linkedinUrl', form.linkedinUrl);
 			payload.set('faxNumber', form.faxNumber);
 			payload.set('startedAtMs', startedAtMs);
+			payload.set(
+				'applicationAnswers',
+				JSON.stringify(
+					questions.map((q) => ({ questionId: q.id, answer: String(answers[q.id] || '') }))
+				)
+			);
 			if (resumeFile) {
 				payload.set('resumeFile', resumeFile);
 			}
@@ -340,6 +359,27 @@ export default function CareerJobDetailClient({ job }) {
 								onChange={(event) => setForm((current) => ({ ...current, linkedinUrl: event.target.value }))}
 							/>
 						</label>
+
+						{questions.length > 0 ? (
+							<div className="career-apply-questions">
+								{questions.map((q) => (
+									<label key={q.id}>
+										<span>
+											{q.label}
+											{q.required ? ' *' : ''}
+										</span>
+										<textarea
+											rows={3}
+											value={answers[q.id] || ''}
+											onChange={(e) =>
+												setAnswers((current) => ({ ...current, [q.id]: e.target.value }))
+											}
+											required={q.required}
+										/>
+									</label>
+								))}
+							</div>
+						) : null}
 
 						<label>
 							<span>Resume File (PDF, DOC, DOCX) *</span>

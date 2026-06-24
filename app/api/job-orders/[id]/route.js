@@ -204,6 +204,7 @@ async function patchJob_orders_idHandler(req, { params }) {
 				openedAt: true,
 				closedAt: true,
 				customFields: true,
+				applicationQuestions: true,
 				clientId: true,
 				contactId: true,
 				ownerId: true,
