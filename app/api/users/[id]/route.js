@@ -79,20 +79,24 @@ async function findScopedUser(id, actingUser, enforceScope = true) {
 }
 
 async function getUsers_idHandler(req, { params }) {
-	const awaitedParams = await params;
-	const id = parseRouteId(awaitedParams);
+	try {
+		const awaitedParams = await params;
+		const id = parseRouteId(awaitedParams);
 
-	const hasAdmin = await hasAdministrator();
-	const actingUser = await getActingUser(req, { allowFallback: false });
-	if (!actingUser) {
-		return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
-	}
-	const user = await findScopedUser(id, actingUser, hasAdmin);
-	if (!user) {
-		return NextResponse.json({ error: 'User not found.' }, { status: 404 });
-	}
+		const hasAdmin = await hasAdministrator();
+		const actingUser = await getActingUser(req, { allowFallback: false });
+		if (!actingUser) {
+			return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+		}
+		const user = await findScopedUser(id, actingUser, hasAdmin);
+		if (!user) {
+			return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+		}
 
-	return NextResponse.json(user);
+		return NextResponse.json(user);
+	} catch (error) {
+		return handleError(error, 'Failed to fetch user.');
+	}
 }
 
 async function patchUsers_idHandler(req, { params }) {
