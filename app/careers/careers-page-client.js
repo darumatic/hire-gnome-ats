@@ -314,8 +314,7 @@ export default function CareersPageClient({
 								</div>
 
 								<p className="careers-job-teaser">{job.teaser || 'View details to review full responsibilities.'}</p>
-								<p className="careers-job-pay">{formatCurrencyRange(job.salaryMin, job.salaryMax, job.currency)}</p>
-								<Link href={`/careers/jobs/${job.id}`} className="careers-job-cta">
+<Link href={`/careers/jobs/${job.id}`} className="careers-job-cta">
 									View Details & Apply
 								</Link>
 							</li>
