@@ -18,8 +18,6 @@ const initialForm = {
 	email: '',
 	mobile: '',
 	zipCode: '',
-	currentJobTitle: '',
-	currentEmployer: '',
 	linkedinUrl: '',
 	faxNumber: ''
 };
@@ -33,8 +31,6 @@ function toStoredFormValue(value) {
 		email: String(value?.email || ''),
 		mobile: String(value?.mobile || ''),
 		zipCode: String(value?.zipCode || ''),
-		currentJobTitle: String(value?.currentJobTitle || ''),
-		currentEmployer: String(value?.currentEmployer || ''),
 		linkedinUrl: String(value?.linkedinUrl || ''),
 		faxNumber: ''
 	};
@@ -128,8 +124,6 @@ export default function CareerJobDetailClient({ job }) {
 			// Ignore sessionStorage failures and keep the form usable.
 		}
 	}, [
-		form.currentEmployer,
-		form.currentJobTitle,
 		form.email,
 		form.firstName,
 		form.lastName,
@@ -170,8 +164,6 @@ export default function CareerJobDetailClient({ job }) {
 			payload.set('email', form.email);
 			payload.set('mobile', form.mobile);
 			payload.set('zipCode', form.zipCode);
-			payload.set('currentJobTitle', form.currentJobTitle);
-			payload.set('currentEmployer', form.currentEmployer);
 			payload.set('linkedinUrl', form.linkedinUrl);
 			payload.set('faxNumber', form.faxNumber);
 			payload.set('startedAtMs', startedAtMs);
@@ -322,27 +314,6 @@ export default function CareerJobDetailClient({ job }) {
 									value={form.zipCode}
 									onChange={(event) => setForm((current) => ({ ...current, zipCode: event.target.value }))}
 									required
-								/>
-							</label>
-						</div>
-
-						<div className="career-apply-grid-2">
-							<label>
-								<span>Current Title</span>
-								<input
-									value={form.currentJobTitle}
-									onChange={(event) =>
-										setForm((current) => ({ ...current, currentJobTitle: event.target.value }))
-									}
-								/>
-							</label>
-							<label>
-								<span>Current Employer</span>
-								<input
-									value={form.currentEmployer}
-									onChange={(event) =>
-										setForm((current) => ({ ...current, currentEmployer: event.target.value }))
-									}
 								/>
 							</label>
 						</div>
