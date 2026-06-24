@@ -228,16 +228,6 @@ export default function CareerJobDetailClient({ job }) {
 								<span>{job.employmentType || 'Role type to be discussed'}</span>
 							</p>
 						</div>
-						<div className="career-detail-highlights">
-							<p>
-								<span>Compensation</span>
-								<strong>{formatCurrencyRange(job.salaryMin, job.salaryMax, job.currency)}</strong>
-							</p>
-							<p>
-								<span>Posted</span>
-								<strong>{formatDate(job.publishedAt || job.openedAt)}</strong>
-							</p>
-						</div>
 					</div>
 
 					<div
