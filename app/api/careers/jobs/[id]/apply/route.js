@@ -66,7 +66,7 @@ function escapeHtml(value) {
 		.replace(/'/g, '&#39;');
 }
 
-function buildWebApplicationCandidateNoteContent({ jobOrderTitle, application, normalizedEmail, resumeFileName, questions }) {
+function buildWebApplicationCandidateNoteContent({ jobOrderTitle, application, normalizedEmail, resumeFileName, questions, answers = [] }) {
 	const lines = [
 		`Applied to ${asTrimmedString(jobOrderTitle) || '-'} via public career site.`,
 		`Applied At: ${new Date().toISOString()}`,
@@ -76,12 +76,12 @@ function buildWebApplicationCandidateNoteContent({ jobOrderTitle, application, n
 		`LinkedIn: ${asTrimmedString(application.linkedinUrl) || '-'}`,
 		`Resume File: ${asTrimmedString(resumeFileName) || '-'}`
 	];
-	const answers = Array.isArray(application.applicationAnswers) ? application.applicationAnswers : [];
+	const normalizedAnswers = Array.isArray(answers) ? answers : [];
 	if (Array.isArray(questions) && questions.length > 0) {
 		lines.push('');
 		lines.push('Application Questions:');
 		for (const q of questions) {
-			const answer = answers.find((a) => a.questionId === q.id);
+			const answer = normalizedAnswers.find((a) => a.questionId === q.id);
 			lines.push(`  ${q.label}: ${asTrimmedString(answer?.answer) || '-'}`);
 		}
 	}
@@ -517,12 +517,13 @@ async function postCareerSiteApplication(req, { params }) {
 						application,
 						normalizedEmail,
 						resumeFileName: resumeFile?.name || '',
-						questions: Array.isArray(jobOrder.applicationQuestions) ? jobOrder.applicationQuestions : []
+						questions: Array.isArray(jobOrder.applicationQuestions) ? jobOrder.applicationQuestions : [],
+						answers: Array.isArray(payload.applicationAnswers) ? payload.applicationAnswers : []
 					})
 				}
 			});
 
-			const applicationAnswers = (Array.isArray(application.applicationAnswers) ? application.applicationAnswers : []);
+			const applicationAnswers = Array.isArray(payload.applicationAnswers) ? payload.applicationAnswers : [];
 			const answersForSubmission = (Array.isArray(jobOrder.applicationQuestions) ? jobOrder.applicationQuestions : [])
 				.map((q) => {
 					const match = applicationAnswers.find((a) => a.questionId === q.id);
