@@ -385,7 +385,7 @@ function buildUniqueSeedName({ firstNames, lastNames, index, usedNames }) {
 	throw new Error('Unable to generate a unique seeded name.');
 }
 
-function buildSeedUserEmail(userSeed, index, state) {
+function assignAndBuildSeedUserEmail(userSeed, index, state) {
 	if (userSeed?.role === 'ADMINISTRATOR' && !state.adminAssigned) {
 		state.adminAssigned = true;
 		return `admin@${PERSON_EMAIL_DOMAIN}`;
