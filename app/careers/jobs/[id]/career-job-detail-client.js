@@ -26,11 +26,13 @@ const CAREER_APPLY_SESSION_KEY = 'careerQuickApplyForm';
 
 function toStoredFormValue(value) {
 	return {
-		firstName: String(value?.firstName || ''),
-		lastName: String(value?.lastName || ''),
-		email: String(value?.email || ''),
-		mobile: String(value?.mobile || ''),
-		zipCode: String(value?.zipCode || ''),
+		// Do not persist sensitive PII in sessionStorage.
+		firstName: '',
+		lastName: '',
+		email: '',
+		mobile: '',
+		zipCode: '',
+		// Keep only non-sensitive convenience fields.
 		linkedinUrl: String(value?.linkedinUrl || ''),
 		faxNumber: ''
 	};
