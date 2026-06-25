@@ -177,6 +177,7 @@ export default function AdminSettingsPage() {
 
 	const isS3ObjectStorage = form.objectStorageProvider !== 'local';
 	const displayedLogo = logoPreviewUrl || (form.removeLogo ? '/branding/hire-gnome.png' : currentBranding.logoUrl);
+	const safeDisplayedLogo = isSafeImageSrc(displayedLogo) ? displayedLogo : '/branding/hire-gnome.png';
 	const brandingDirty = useMemo(
 		() =>
 			Boolean(logoFile)
@@ -745,9 +746,7 @@ export default function AdminSettingsPage() {
 
 									<div className="branding-preview-card">
 										<p className="branding-preview-label">Preview</p>
-										{isSafeImageSrc(displayedLogo) ? (
-											<img src={displayedLogo} alt={form.siteName || 'Site logo preview'} className="branding-preview-logo" />
-										) : null}
+										<img src={safeDisplayedLogo} alt={form.siteName || 'Site logo preview'} className="branding-preview-logo" />
 									</div>
 								</div>
 								<label className="switch-field">
