@@ -59,8 +59,7 @@ async function run() {
 			const created = await prisma.systemSetting.create({
 				data: {
 					recordId: createRecordId('SS'),
-					careerSiteEnabled: true,
-					updatedAt: new Date()
+					careerSiteEnabled: true
 				}
 			});
 			state.settingId = created.id;
@@ -100,7 +99,10 @@ async function run() {
 
 		// ── Test 1: Public job detail API — sensitive fields absent ───────────────
 		const detailRes = await fetch(`${BASE_URL}/api/careers/jobs/${jobOrder.id}`);
-		assert(detailRes.ok, `Detail API returned ${detailRes.status}`);
+		if (!detailRes.ok) {
+			const body = await detailRes.text().catch(() => '(unreadable)');
+			throw new Error(`Detail API returned ${detailRes.status}: ${body}`);
+		}
 		const detail = await detailRes.json();
 
 		assert(!('responseCount' in detail), 'responseCount must not be in public detail API');
@@ -142,7 +144,10 @@ async function run() {
 			method: 'POST',
 			body: form
 		});
-		assert(applyRes.status === 201, `Apply must return 201, got ${applyRes.status}`);
+		if (applyRes.status !== 201) {
+			const body = await applyRes.text().catch(() => '(unreadable)');
+			throw new Error(`Apply must return 201, got ${applyRes.status}: ${body}`);
+		}
 		const applyBody = await applyRes.json();
 		assert(applyBody.ok, 'Apply response must have ok:true');
 		assert(applyBody.submissionId, 'Apply response must include submissionId');
