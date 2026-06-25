@@ -34,11 +34,40 @@ async function ensureReachable() {
 
 async function run() {
 	const suffix = `${Date.now()}`;
-	const state = { clientId: null, jobOrderId: null, candidateId: null, submissionId: null };
+	const state = {
+		clientId: null, jobOrderId: null, candidateId: null, submissionId: null,
+		settingId: null, previousCareerSiteEnabled: null
+	};
 
 	await ensureReachable();
 
 	try {
+		// ── Enable career site in system settings ────────────────────────────────
+		// CI starts from a bare migrated DB with no bootstrap, so careerSiteEnabled
+		// defaults to false. Upsert the setting row and restore it in finally.
+		const existingSetting = await prisma.systemSetting.findFirst();
+		if (existingSetting) {
+			state.settingId = existingSetting.id;
+			state.previousCareerSiteEnabled = existingSetting.careerSiteEnabled;
+			if (!existingSetting.careerSiteEnabled) {
+				await prisma.systemSetting.update({
+					where: { id: existingSetting.id },
+					data: { careerSiteEnabled: true }
+				});
+			}
+		} else {
+			const created = await prisma.systemSetting.create({
+				data: {
+					recordId: createRecordId('SS'),
+					careerSiteEnabled: true,
+					updatedAt: new Date()
+				}
+			});
+			state.settingId = created.id;
+			state.previousCareerSiteEnabled = null;
+		}
+		log('Career site enabled in system settings');
+
 		// ── Seed ──────────────────────────────────────────────────────────────────
 		const client = await prisma.client.create({
 			data: {
@@ -168,6 +197,19 @@ async function run() {
 		}
 		if (state.clientId) {
 			await prisma.client.deleteMany({ where: { id: state.clientId } });
+		}
+		// Restore system settings to pre-test state
+		if (state.settingId !== null) {
+			if (state.previousCareerSiteEnabled === null) {
+				// We created the row — delete it
+				await prisma.systemSetting.deleteMany({ where: { id: state.settingId } });
+			} else if (!state.previousCareerSiteEnabled) {
+				// We enabled it — restore to disabled
+				await prisma.systemSetting.update({
+					where: { id: state.settingId },
+					data: { careerSiteEnabled: false }
+				});
+			}
 		}
 		await prisma.$disconnect();
 	}
