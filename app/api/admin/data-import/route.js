@@ -1656,7 +1656,7 @@ async function parseBullhornCandidateAttachmentsFromFormData(manifestValue, form
 	if (!manifestValue) return [];
 	let manifest;
 	try {
-		manifest = JSON.parse(String(manifestValue || '[]'));
+		manifest = JSON.parse(String(manifestValue));
 	} catch {
 		throw new ImportValidationError('Bullhorn candidate attachment manifest is invalid.');
 	}

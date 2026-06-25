@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { BookmarkPlus, BookmarkX, ChevronLeft, ChevronRight, Download, FileText, LoaderCircle, MoreVertical, RefreshCcw, Save, Sparkles, Trash2, Upload, UserPlus, X } from 'lucide-react';
+import { BookmarkPlus, BookmarkX, ChevronLeft, ChevronRight, Download, LoaderCircle, MoreVertical, RefreshCcw, Save, Sparkles, Trash2, Upload, UserPlus, X } from 'lucide-react';
 import LookupTypeaheadSelect from '@/app/components/lookup-typeahead-select';
 import PhoneInput from '@/app/components/phone-input';
 import AddressTypeaheadInput from '@/app/components/address-typeahead-input';
@@ -214,13 +214,6 @@ function formatDateRange(startDate, endDate, isCurrent) {
 	const start = formatDateOnly(startDate) || 'Start n/a';
 	const end = isCurrent ? 'Present' : formatDateOnly(endDate) || 'End n/a';
 	return `${start} - ${end}`;
-}
-
-function truncateText(value, maxLength = 220) {
-	const text = String(value || '').trim();
-	if (!text) return '';
-	if (text.length <= maxLength) return text;
-	return `${text.slice(0, maxLength).trimEnd()}...`;
 }
 
 function wait(ms) {

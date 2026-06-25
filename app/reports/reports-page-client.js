@@ -107,7 +107,6 @@ export default function ReportsPage() {
 	const [filters, setFilters] = useState(defaultFilters);
 	const [report, setReport] = useState(emptyReportState);
 	const [detail, setDetail] = useState(emptyDetailState);
-	const [detailSelection, setDetailSelection] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [applying, setApplying] = useState(false);
 	const [exporting, setExporting] = useState(false);
@@ -124,7 +123,6 @@ export default function ReportsPage() {
 
 	async function loadDetail(nextSelection, nextFilters = filters) {
 		setDetailLoading(true);
-		setDetailSelection(nextSelection);
 		setDetailModalOpen(true);
 		try {
 			const query = buildDetailQuery(nextFilters, nextSelection);

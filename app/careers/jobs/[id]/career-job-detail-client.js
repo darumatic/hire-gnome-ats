@@ -47,35 +47,6 @@ function loadStoredApplyForm() {
 	}
 }
 
-function formatCurrencyRange(min, max, currency = 'USD') {
-	const hasMin = Number.isFinite(Number(min));
-	const hasMax = Number.isFinite(Number(max));
-	if (!hasMin && !hasMax) return 'Compensation discussed during interview.';
-
-	const formatter = new Intl.NumberFormat('en-US', {
-		style: 'currency',
-		currency: currency === 'CAD' ? 'CAD' : 'USD',
-		maximumFractionDigits: 0
-	});
-
-	if (hasMin && hasMax) {
-		return `${formatter.format(Number(min))} - ${formatter.format(Number(max))}`;
-	}
-	if (hasMin) return `${formatter.format(Number(min))}+`;
-	return `Up to ${formatter.format(Number(max))}`;
-}
-
-function formatDate(value) {
-	if (!value) return '-';
-	const date = new Date(value);
-	if (Number.isNaN(date.getTime())) return '-';
-	return date.toLocaleDateString(undefined, {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric'
-	});
-}
-
 export default function CareerJobDetailClient({ job }) {
 	const toast = useToast();
 	const [form, setForm] = useState(loadStoredApplyForm);
@@ -160,9 +131,7 @@ export default function CareerJobDetailClient({ job }) {
 					questions.map((q) => ({ questionId: q.id, answer: String(answers[q.id] || '') }))
 				)
 			);
-			if (resumeFile) {
-				payload.set('resumeFile', resumeFile);
-			}
+			payload.set('resumeFile', resumeFile);
 
 			const res = await fetch(`/api/careers/jobs/${job.id}/apply`, {
 				method: 'POST',

@@ -16,16 +16,6 @@ const SUPPORTED_ENTITY_TYPES = new Set([
 	'SKILL'
 ]);
 
-const ENTITY_SCOPE_MODEL_MAP = {
-	CANDIDATE: 'candidate',
-	CLIENT: 'client',
-	CONTACT: 'contact',
-	JOB_ORDER: 'jobOrder',
-	SUBMISSION: 'submission',
-	INTERVIEW: 'interview',
-	PLACEMENT: 'offer'
-};
-
 function parsePositiveInt(value) {
 	const parsed = Number(value);
 	if (!Number.isInteger(parsed) || parsed <= 0) return null;

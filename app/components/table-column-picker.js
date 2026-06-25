@@ -178,7 +178,7 @@ export default function TableColumnPicker({ tableKey = '', columns = [] }) {
 		const isHidden = hiddenColumnKeys.includes(columnKey);
 		setHiddenColumnKeys((current) => {
 			const cleanedCurrent = current.filter((key) => availableColumnKeys.has(key));
-			let nextHiddenKeys = cleanedCurrent;
+			let nextHiddenKeys;
 
 				if (isHidden) {
 					nextHiddenKeys = cleanedCurrent.filter((key) => key !== columnKey);

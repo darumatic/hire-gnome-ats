@@ -72,13 +72,6 @@ const IMPORT_SAMPLE_DOWNLOADS = Object.freeze({
 
 const BULLHORN_CANDIDATE_FILES_MANIFEST_NAMES = ['12-candidate-files.csv', '08-candidate-files.csv'];
 
-const CSV_ENTITY_OPTIONS = [
-	{ value: 'clients', label: 'Clients' },
-	{ value: 'contacts', label: 'Contacts' },
-	{ value: 'candidates', label: 'Candidates' },
-	{ value: 'jobOrders', label: 'Job Orders' }
-];
-
 const BULLHORN_CSV_ENTITY_OPTIONS = [
 	{ value: 'customFieldDefinitions', label: 'Custom Fields' },
 	{ value: 'clients', label: 'Clients' },
@@ -2342,7 +2335,7 @@ function downloadZohoCsvTemplate(entity) {
 										type="button"
 										className="btn-secondary"
 										onClick={() => runImport('preview')}
-										disabled={!file || busy}
+										disabled={busy}
 									>
 										{runningMode === 'preview' ? 'Previewing...' : 'Preview Import'}
 									</button>
@@ -2445,7 +2438,6 @@ function downloadZohoCsvTemplate(entity) {
 										const profile = getGenericImportProfile(entry.entity);
 										const fieldOptions = uniqueFieldOptions(profile?.fields || []);
 										const missingRequiredFields = missingRequiredFieldsForEntry(entry);
-										const entryIndex = genericBatchEntries.findIndex((candidate) => candidate.id === entry.id);
 										return (
 											<section
 												ref={mappingSectionRef}

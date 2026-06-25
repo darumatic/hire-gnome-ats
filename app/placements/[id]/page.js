@@ -198,37 +198,6 @@ function formatDate(value) {
 	return formatDateTimeAt(value);
 }
 
-function formatPlacementType(value) {
-	if (value === 'perm') return 'Perm';
-	if (value === 'temp') return 'Temp';
-	return '-';
-}
-
-function formatCurrency(currency, value) {
-	const parsed = parseCurrencyInput(value);
-	if (parsed == null) return '-';
-	return `${currency || 'USD'} ${parsed.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-}
-
-function formatCompensationSummary(row) {
-	if (row.compensationType === 'hourly') {
-		const hourlyPay = row.hourlyRtPayRate ?? row.regularRate ?? row.amount;
-		return `Hourly Pay ${formatCurrency(row.currency, hourlyPay)}`;
-	}
-
-	if (row.compensationType === 'daily') {
-		const dailyPay = row.dailyPayRate ?? row.dailyRate ?? row.amount;
-		return `Daily Pay ${formatCurrency(row.currency, dailyPay)}`;
-	}
-
-	if (row.compensationType === 'salary') {
-		const baseSalary = row.yearlyCompensation ?? row.annualSalary ?? row.amount;
-		return `Base Salary ${formatCurrency(row.currency, baseSalary)}`;
-	}
-
-	return row.amount == null ? '-' : formatCurrency(row.currency, row.amount);
-}
-
 function parsePlacementStartDate(value) {
 	if (!value) return null;
 	const raw = String(value).trim();

@@ -87,7 +87,6 @@ const prisma = new PrismaClient().$extends({
 
 const PERSON_EMAIL_DOMAIN = 'demoats.com';
 const DIVISION_PREFIX = 'HG Seed - ';
-const DEFAULT_LOGIN_PASSWORD = String(process.env.AUTH_DEFAULT_PASSWORD || 'Welcome123!').trim() || 'Welcome123!';
 const DEMO_SITE_NAME = 'Hire Gnome ATS';
 const DEMO_THEME_KEY = 'classic_blue';
 
@@ -333,17 +332,6 @@ const JOB_ORDER_TITLES = [
 	'Compliance Analyst',
 	'Network Engineer',
 	'Implementation Consultant'
-];
-
-const JOB_LOCATIONS = [
-	'Remote',
-	'Hybrid - Austin, TX',
-	'Hybrid - Chicago, IL',
-	'On-site - Denver, CO',
-	'Hybrid - Atlanta, GA',
-	'On-site - Charlotte, NC',
-	'Hybrid - Nashville, TN',
-	'Remote'
 ];
 
 const MARKET_LOCATIONS = [
