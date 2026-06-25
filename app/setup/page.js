@@ -8,6 +8,7 @@ import { useToast } from '@/app/components/toast-provider';
 import useSystemBranding from '@/app/hooks/use-system-branding';
 import { THEME_OPTIONS } from '@/lib/theme-options';
 import { isValidEmailAddress } from '@/lib/email-validation';
+import { isSafeImageSrc } from '@/lib/url-validation';
 
 const INITIAL_FORM = {
 	siteName: 'Hire Gnome ATS',
@@ -195,9 +196,7 @@ export default function SetupPage() {
 
 	const useDefaultBrandPlaque = !logoPreviewUrl && !branding.hasCustomLogo;
 	const brandLogoSrc = logoPreviewUrl || branding.logoUrl;
-	const safeBrandLogoSrc = /^(?:blob:|\/(?!\/)|https?:\/\/)/i.test(brandLogoSrc)
-		? brandLogoSrc
-		: '/branding/hire-gnome.png';
+	const safeBrandLogoSrc = isSafeImageSrc(brandLogoSrc) ? brandLogoSrc : '/branding/hire-gnome.png';
 
 	return (
 		<section className="auth-page">
