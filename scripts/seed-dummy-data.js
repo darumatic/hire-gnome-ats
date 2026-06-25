@@ -1400,10 +1400,10 @@ async function main() {
 						status: pick(SUBMISSION_STATUSES, i + j),
 						notes: 'Submitted with updated resume, compensation targets, and interview availability.',
 						createdByUserId: createdByUser?.id ?? null,
-					createdAt: submissionCreatedAt,
-					updatedAt: submissionUpdatedAt
-				}
-			});
+						createdAt: submissionCreatedAt,
+						updatedAt: submissionUpdatedAt
+					}
+				});
 			submissionCount += 1;
 			seededSubmissions.push({
 				id: submission.id,
