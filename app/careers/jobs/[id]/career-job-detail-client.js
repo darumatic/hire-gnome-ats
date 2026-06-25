@@ -26,13 +26,7 @@ const CAREER_APPLY_SESSION_KEY = 'careerQuickApplyForm';
 
 function toStoredFormValue(value) {
 	return {
-		firstName: String(value?.firstName || ''),
-		lastName: String(value?.lastName || ''),
-		email: String(value?.email || ''),
-		mobile: String(value?.mobile || ''),
-		zipCode: String(value?.zipCode || ''),
-		linkedinUrl: String(value?.linkedinUrl || ''),
-		faxNumber: ''
+		linkedinUrl: String(value?.linkedinUrl || '')
 	};
 }
 
@@ -123,14 +117,7 @@ export default function CareerJobDetailClient({ job }) {
 		} catch {
 			// Ignore sessionStorage failures and keep the form usable.
 		}
-	}, [
-		form.email,
-		form.firstName,
-		form.lastName,
-		form.linkedinUrl,
-		form.mobile,
-		form.zipCode
-	]);
+	}, [form.linkedinUrl]);
 
 	async function onSubmit(event) {
 		event.preventDefault();
