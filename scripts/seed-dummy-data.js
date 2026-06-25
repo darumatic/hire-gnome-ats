@@ -119,7 +119,7 @@ const INDUSTRY_OPTIONS = [
 const CLIENT_STATUSES = ['Prospect', 'Active', 'Active + Verified', 'Inactive'];
 
 const CANDIDATE_STATUSES = ['new', 'in_review', 'qualified', 'submitted', 'interview', 'offered'];
-const JOB_STATUSES = ['open', 'on_hold', 'open'];
+const JOB_STATUSES = ['open', 'on_hold', 'closed'];
 const SUBMISSION_STATUSES = ['submitted', 'under_review', 'qualified', 'interview', 'offered'];
 const INTERVIEW_STATUSES = ['scheduled', 'completed'];
 const INTERVIEW_TYPES = ['phone', 'video', 'in_person'];
