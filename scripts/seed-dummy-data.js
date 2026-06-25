@@ -1653,7 +1653,7 @@ async function main() {
 	if (recruiterUser) {
 		console.log(`Recruiter login: ${recruiterUser.email}`);
 	}
-	console.log(`Login password for seeded users: ${DEFAULT_LOGIN_PASSWORD}`);
+	console.log('Login password for seeded users: see AUTH_DEFAULT_PASSWORD in your .env (defaults to "Welcome123!" if unset).');
 }
 
 main()

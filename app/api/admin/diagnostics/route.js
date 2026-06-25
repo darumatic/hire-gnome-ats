@@ -52,6 +52,10 @@ function toBooleanFlag(value) {
 
 function escapeMarkdownCell(value) {
 	return String(value ?? '')
+		// Escape backslashes first — otherwise a value ending in a literal
+		// backslash could escape the adjacent structural "|" cell delimiter
+		// once this string is interpolated into a markdown table row.
+		.replace(/\\/g, '\\\\')
 		.replace(/\|/g, '\\|')
 		.replace(/\r?\n/g, ' ')
 		.trim();

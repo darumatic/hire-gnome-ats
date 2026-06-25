@@ -10,6 +10,7 @@ import { useToast } from '@/app/components/toast-provider';
 import { THEME_OPTIONS } from '@/lib/theme-options';
 import { toBooleanFlag } from '@/lib/boolean-flag';
 import { formatDateTimeAt } from '@/lib/date-format';
+import { isSafeImageSrc } from '@/lib/url-validation';
 
 const initialForm = {
 	siteName: '',
@@ -744,7 +745,9 @@ export default function AdminSettingsPage() {
 
 									<div className="branding-preview-card">
 										<p className="branding-preview-label">Preview</p>
-										<img src={displayedLogo} alt={form.siteName || 'Site logo preview'} className="branding-preview-logo" />
+										{isSafeImageSrc(displayedLogo) ? (
+											<img src={displayedLogo} alt={form.siteName || 'Site logo preview'} className="branding-preview-logo" />
+										) : null}
 									</div>
 								</div>
 								<label className="switch-field">

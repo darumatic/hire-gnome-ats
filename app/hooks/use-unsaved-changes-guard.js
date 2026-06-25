@@ -15,11 +15,16 @@ function toSerializedValue(value) {
 
 function isNonNavigatingHref(href) {
 	if (!href) return true;
+	// Browsers strip embedded tab/newline/carriage-return characters and
+	// leading/trailing whitespace, and treat schemes case-insensitively,
+	// before parsing a URL — match that here so a scheme like "JavaScript:"
+	// or "\tjavascript:" isn't missed by a naive case-sensitive prefix check.
+	const normalized = href.replace(/[\t\n\r]/g, '').trim().toLowerCase();
 	return (
-		href.startsWith('#') ||
-		href.startsWith('mailto:') ||
-		href.startsWith('tel:') ||
-		href.startsWith('javascript:')
+		normalized.startsWith('#') ||
+		normalized.startsWith('mailto:') ||
+		normalized.startsWith('tel:') ||
+		normalized.startsWith('javascript:')
 	);
 }
 
