@@ -23,6 +23,10 @@ function assert(condition, message) {
 	if (!condition) throw new Error(`FAIL: ${message}`);
 }
 
+function step(msg) {
+	console.log(`[step] ${msg}`);
+}
+
 function log(msg) {
 	console.log(`  ✓ ${msg}`);
 }
@@ -39,12 +43,12 @@ async function run() {
 		settingId: null, previousCareerSiteEnabled: null
 	};
 
+	step('Checking app is reachable');
 	await ensureReachable();
 
 	try {
 		// ── Enable career site in system settings ────────────────────────────────
-		// CI starts from a bare migrated DB with no bootstrap, so careerSiteEnabled
-		// defaults to false. Upsert the setting row and restore it in finally.
+		step('Setting up system settings');
 		const existingSetting = await prisma.systemSetting.findFirst();
 		if (existingSetting) {
 			state.settingId = existingSetting.id;
@@ -68,6 +72,7 @@ async function run() {
 		log('Career site enabled in system settings');
 
 		// ── Seed ──────────────────────────────────────────────────────────────────
+		step('Creating test client');
 		const client = await prisma.client.create({
 			data: {
 				recordId: createRecordId('CLI'),
@@ -76,7 +81,9 @@ async function run() {
 			}
 		});
 		state.clientId = client.id;
+		log(`Client created (id=${client.id})`);
 
+		step('Creating test job order');
 		const xssDescription = '<p>Good role.</p><img src=x onerror="window.__xss=1"><script>window.__xss2=1</script>';
 		const q1Id = `q1-${suffix}`;
 		const q2Id = `q2-${suffix}`;
@@ -96,14 +103,17 @@ async function run() {
 			}
 		});
 		state.jobOrderId = jobOrder.id;
+		log(`Job order created (id=${jobOrder.id})`);
 
 		// ── Test 1: Public job detail API — sensitive fields absent ───────────────
+		step(`Fetching public job detail: GET /api/careers/jobs/${jobOrder.id}`);
 		const detailRes = await fetch(`${BASE_URL}/api/careers/jobs/${jobOrder.id}`);
 		if (!detailRes.ok) {
 			const body = await detailRes.text().catch(() => '(unreadable)');
 			throw new Error(`Detail API returned ${detailRes.status}: ${body}`);
 		}
 		const detail = await detailRes.json();
+		log(`Detail API returned 200, keys: ${Object.keys(detail).join(', ')}`);
 
 		assert(!('responseCount' in detail), 'responseCount must not be in public detail API');
 		assert(!('salaryMin' in detail), 'salaryMin must not be in public detail API');
@@ -113,17 +123,20 @@ async function run() {
 		log('Public detail API does not expose sensitive fields (LOW-1 regression)');
 
 		// ── Test 2: publicDescription is sanitized at render time (HIGH-1 regression)
+		step('Asserting publicDescription XSS sanitization');
 		assert(!detail.publicDescription.includes('onerror'), 'onerror attribute must be stripped from publicDescription');
 		assert(!detail.publicDescription.includes('<script'), 'script tag must be stripped from publicDescription');
 		assert(detail.publicDescription.includes('Good role'), 'safe text content must be preserved');
 		log('publicDescription XSS payload stripped at render time (HIGH-1 regression)');
 
 		// ── Test 3: applicationQuestions present ───────────────────────────────────
+		step('Asserting applicationQuestions');
 		assert(Array.isArray(detail.applicationQuestions), 'applicationQuestions must be an array');
 		assert(detail.applicationQuestions.length === 2, 'both questions must be present');
 		log('applicationQuestions returned in public detail API');
 
 		// ── Test 4: Apply with answers ────────────────────────────────────────────
+		step(`Submitting application: POST /api/careers/jobs/${jobOrder.id}/apply`);
 		const minimalPdf = Buffer.from('%PDF-1.4 1 0 obj<</Type/Catalog>>endobj');
 		const form = new FormData();
 		form.set('firstName', 'Smoke');
@@ -156,19 +169,21 @@ async function run() {
 		log(`Application submitted successfully (submissionId=${state.submissionId})`);
 
 		// ── Test 5: Answers stored on Submission.customFields (commit 0391c8e regression)
+		step('Checking Submission.customFields in DB');
 		const submission = await prisma.submission.findUnique({
 			where: { id: state.submissionId }
 		});
 		assert(submission, 'Submission row must exist in DB');
 		const cf = submission.customFields;
-		assert(cf && Array.isArray(cf.applicationAnswers), 'customFields.applicationAnswers must be an array');
-		assert(cf.applicationAnswers.length === 2, 'both answers must be stored');
+		assert(cf && Array.isArray(cf.applicationAnswers), `customFields.applicationAnswers must be an array, got: ${JSON.stringify(cf)}`);
+		assert(cf.applicationAnswers.length === 2, `expected 2 answers, got ${cf.applicationAnswers.length}`);
 		const labels = cf.applicationAnswers.map((a) => a.question);
 		assert(labels.includes('Working rights'), 'Working rights answer must be stored');
 		assert(labels.includes('Availability'), 'Availability answer must be stored');
 		log('Application answers stored on Submission.customFields (answer-storage regression)');
 
 		// ── Test 6: Bot protection — honeypot blocks silently ─────────────────────
+		step('Testing honeypot bot protection');
 		const countBefore = await prisma.submission.count({ where: { jobOrderId: jobOrder.id } });
 		const botForm = new FormData();
 		botForm.set('firstName', 'Bot');
@@ -189,6 +204,7 @@ async function run() {
 		console.log(`Verified against ${BASE_URL}`);
 	} finally {
 		// ── Cleanup ───────────────────────────────────────────────────────────────
+		step('Cleaning up test data');
 		if (state.submissionId) {
 			await prisma.submission.deleteMany({ where: { id: state.submissionId } });
 		}
@@ -206,10 +222,8 @@ async function run() {
 		// Restore system settings to pre-test state
 		if (state.settingId !== null) {
 			if (state.previousCareerSiteEnabled === null) {
-				// We created the row — delete it
 				await prisma.systemSetting.deleteMany({ where: { id: state.settingId } });
 			} else if (!state.previousCareerSiteEnabled) {
-				// We enabled it — restore to disabled
 				await prisma.systemSetting.update({
 					where: { id: state.settingId },
 					data: { careerSiteEnabled: false }

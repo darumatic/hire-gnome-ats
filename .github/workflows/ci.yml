@@ -142,7 +142,10 @@ jobs:
 
       - name: Print app logs on failure
         if: failure()
-        run: cat /tmp/ats-start.log || true
+        run: |
+          echo "=== App server logs ==="
+          cat /tmp/ats-start.log || true
+          echo "=== End of app server logs ==="
 
       - name: Stop app
         if: always()
