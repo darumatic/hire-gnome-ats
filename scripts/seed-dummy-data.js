@@ -385,7 +385,7 @@ function buildUniqueSeedName({ firstNames, lastNames, index, usedNames }) {
 	throw new Error('Unable to generate a unique seeded name.');
 }
 
-function buildSeedUserEmail(userSeed, index, state) {
+function assignAndBuildSeedUserEmail(userSeed, index, state) {
 	if (userSeed?.role === 'ADMINISTRATOR' && !state.adminAssigned) {
 		state.adminAssigned = true;
 		return `admin@${PERSON_EMAIL_DOMAIN}`;
@@ -1018,7 +1018,7 @@ async function main() {
 			data: {
 				firstName: userSeed.firstName,
 				lastName: userSeed.lastName,
-				email: buildSeedUserEmail(userSeed, i, userEmailState),
+				email: assignAndBuildSeedUserEmail(userSeed, i, userEmailState),
 				role: userSeed.role,
 				divisionId: division?.id ?? null,
 				isActive: true
@@ -1583,7 +1583,9 @@ async function main() {
 
 		if (jobSubmissions[1] && i % 4 === 0) {
 			const latestPassAt = addHours(accessCreatedAt, 10 + (i % 14));
-			const nextPriority = (jobSubmissions[jobSubmissions.length - 1]?.submissionPriority || jobSubmissions[1].submissionPriority) + 1;
+			const fallbackPriority = jobSubmissions[1].submissionPriority;
+			const lastSubmissionPriority = jobSubmissions[jobSubmissions.length - 1]?.submissionPriority ?? fallbackPriority;
+			const nextPriority = lastSubmissionPriority + 1;
 			await prisma.submission.update({
 				where: { id: jobSubmissions[1].id },
 				data: {
