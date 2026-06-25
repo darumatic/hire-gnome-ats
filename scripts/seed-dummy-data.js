@@ -1583,7 +1583,9 @@ async function main() {
 
 		if (jobSubmissions[1] && i % 4 === 0) {
 			const latestPassAt = addHours(accessCreatedAt, 10 + (i % 14));
-			const nextPriority = (jobSubmissions[jobSubmissions.length - 1]?.submissionPriority || jobSubmissions[1].submissionPriority) + 1;
+			const fallbackPriority = jobSubmissions[1].submissionPriority;
+			const lastSubmissionPriority = jobSubmissions[jobSubmissions.length - 1]?.submissionPriority ?? fallbackPriority;
+			const nextPriority = lastSubmissionPriority + 1;
 			await prisma.submission.update({
 				where: { id: jobSubmissions[1].id },
 				data: {
