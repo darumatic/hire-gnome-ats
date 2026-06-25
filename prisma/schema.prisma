@@ -641,7 +641,7 @@ model JobOrder {
 	openedAt              DateTime     @default(now())
 	closedAt              DateTime?
 	customFields          Json?
-	applicationQuestions  Json?
+	applicationQuestions  Json         @default("[]")
 	ownerId               Int?
 	divisionId            Int?
 	createdAt             DateTime     @default(now())
