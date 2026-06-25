@@ -10,7 +10,6 @@ import { useToast } from '@/app/components/toast-provider';
 import { THEME_OPTIONS } from '@/lib/theme-options';
 import { toBooleanFlag } from '@/lib/boolean-flag';
 import { formatDateTimeAt } from '@/lib/date-format';
-import { isSafeImageSrc } from '@/lib/url-validation';
 
 const initialForm = {
 	siteName: '',
@@ -177,7 +176,9 @@ export default function AdminSettingsPage() {
 
 	const isS3ObjectStorage = form.objectStorageProvider !== 'local';
 	const displayedLogo = logoPreviewUrl || (form.removeLogo ? '/branding/hire-gnome.png' : currentBranding.logoUrl);
-	const safeDisplayedLogo = isSafeImageSrc(displayedLogo) ? displayedLogo : '/branding/hire-gnome.png';
+	const safeDisplayedLogo = /^(?:blob:|\/(?!\/)|https?:\/\/)/i.test(displayedLogo)
+		? displayedLogo
+		: '/branding/hire-gnome.png';
 	const brandingDirty = useMemo(
 		() =>
 			Boolean(logoFile)
