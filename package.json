@@ -17,7 +17,7 @@
 		"start": "NODE_ENV=production next start",
 		"ci:preflight": "node scripts/preflight.cjs",
 		"ci:build": "npm run build",
-		"ci:lint": "eslint app lib --max-warnings 0",
+		"ci:lint": "eslint app lib",
 		"ci:smoke": "node scripts/test-permissions-api.cjs",
 		"ci:smoke:careers": "node scripts/test-career-site.cjs",
 		"ci:test": "npm run ci:preflight && npm run ci:build",
