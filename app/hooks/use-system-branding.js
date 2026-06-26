@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toBooleanFlag } from '@/lib/boolean-flag';
 
 const defaults = {
-	siteName: 'Hire Gnome ATS',
+	siteName: 'Darumatic ATS',
 	logoUrl: '/branding/hire-gnome.png',
 	themeKey: 'classic_blue',
 	hasCustomLogo: false,
@@ -18,6 +18,13 @@ function initialThemeKey() {
 	const fromHtml = String(document.documentElement.getAttribute('data-theme') || '').trim();
 	if (fromHtml) return fromHtml;
 	return defaults.themeKey;
+}
+
+function initialSiteName() {
+	if (typeof window === 'undefined') return defaults.siteName;
+	const fromHtml = String(document.documentElement.getAttribute('data-site-name') || '').trim();
+	if (fromHtml) return fromHtml;
+	return defaults.siteName;
 }
 
 function normalizeBranding(data) {
@@ -34,10 +41,15 @@ function normalizeBranding(data) {
 }
 
 export default function useSystemBranding() {
-	const [branding, setBranding] = useState(() => ({
-		...defaults,
-		themeKey: initialThemeKey()
-	}));
+	const [branding, setBranding] = useState(() => {
+		const siteName = initialSiteName();
+		return {
+			...defaults,
+			themeKey: initialThemeKey(),
+			siteName,
+			siteTitle: siteName
+		};
+	});
 	const loadBranding = useCallback(async () => {
 		const res = await fetch('/api/system-settings', { cache: 'no-store' });
 		if (!res.ok) return;

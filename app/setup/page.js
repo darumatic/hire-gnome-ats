@@ -11,7 +11,7 @@ import { isValidEmailAddress } from '@/lib/email-validation';
 import { isSafeImageSrc } from '@/lib/url-validation';
 
 const INITIAL_FORM = {
-	siteName: 'Hire Gnome ATS',
+	siteName: 'Darumatic ATS',
 	themeKey: 'classic_blue',
 	firstName: '',
 	lastName: '',

@@ -26,7 +26,7 @@ export async function generateMetadata() {
 export default async function RootLayout({ children }) {
 	const branding = await getSystemBranding();
 	return (
-		<html lang="en" data-theme={branding.themeKey}>
+		<html lang="en" data-theme={branding.themeKey} data-site-name={branding.siteName}>
 			<body>
 				<ConfirmDialogProvider>
 					<AppShell>{children}</AppShell>

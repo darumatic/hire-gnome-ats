@@ -302,11 +302,17 @@ export default function InterviewDetailsPage() {
 
 		setSaveState({ saving: true, error: '', success: '' });
 		const { videoCallProvider: _videoCallProvider, ...formPayload } = form;
+		const toUtcIso = (localDt) => (localDt ? new Date(localDt).toISOString() : localDt);
+		const patchPayload = {
+			...formPayload,
+			startsAt: toUtcIso(formPayload.startsAt),
+			endsAt: toUtcIso(formPayload.endsAt)
+		};
 
 		const res = await fetch(`/api/interviews/${id}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(formPayload)
+			body: JSON.stringify(patchPayload)
 		});
 
 		if (!res.ok) {
@@ -380,7 +386,13 @@ export default function InterviewDetailsPage() {
 		try {
 			const payloadSourceForm = toForm(interview);
 			const { videoCallProvider: _videoCallProvider, ...payloadForm } = payloadSourceForm;
-			const payload = { ...payloadForm, status: 'cancelled' };
+			const toUtcIsoFromLocal = (localDt) => (localDt ? new Date(localDt).toISOString() : localDt);
+			const payload = {
+				...payloadForm,
+				startsAt: toUtcIsoFromLocal(payloadForm.startsAt),
+				endsAt: toUtcIsoFromLocal(payloadForm.endsAt),
+				status: 'cancelled'
+			};
 			const res = await fetch(`/api/interviews/${id}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },

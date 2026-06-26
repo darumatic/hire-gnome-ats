@@ -182,9 +182,14 @@ function NewInterviewsPageContent() {
 
 		try {
 			const { videoCallProvider: _videoCallProvider, ...formPayload } = form;
+			// datetime-local inputs return local-time strings without a timezone
+			// suffix; convert to UTC ISO strings so the server (which runs in UTC)
+			// stores the correct instant instead of mis-interpreting local time as UTC.
+			const toUtcIso = (localDt) => (localDt ? new Date(localDt).toISOString() : localDt);
 			const payload = {
 				...formPayload,
-				endsAt: computedEndsAt
+				startsAt: toUtcIso(formPayload.startsAt),
+				endsAt: toUtcIso(computedEndsAt)
 			};
 
 			const res = await fetch('/api/interviews', {

@@ -970,6 +970,7 @@ export default function PlacementDetailsPage() {
 									>
 										<option value="USD">USD</option>
 										<option value="CAD">CAD</option>
+										<option value="AUD">AUD</option>
 									</select>
 								</FormField>
 							</div>

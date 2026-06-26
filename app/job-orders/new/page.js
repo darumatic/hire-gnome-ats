@@ -19,7 +19,7 @@ import { fetchLookupOptionById } from '@/lib/lookup-client';
 import { fetchUnassignedDivisionOption } from '@/lib/default-division-client';
 import { toBooleanFlag } from '@/lib/boolean-flag';
 
-const JOB_ORDER_CURRENCIES = ['USD', 'CAD'];
+const JOB_ORDER_CURRENCIES = ['USD', 'CAD', 'AUD'];
 
 const initialForm = {
 	title: '',
@@ -549,6 +549,7 @@ function NewJobOrdersPageContent() {
 								>
 									<option value="USD">USD</option>
 									<option value="CAD">CAD</option>
+									<option value="AUD">AUD</option>
 								</select>
 							</FormField>
 							<FormField label="Salary Min">
