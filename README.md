@@ -554,3 +554,5 @@ This project is licensed under the GNU Affero General Public License v3.0 (`AGPL
 
 - Full text: [`LICENSE`](LICENSE)
 - SPDX identifier: `AGPL-3.0-only`
+
+<!-- auto-deploy pipeline verified 2026-06-28 -->
