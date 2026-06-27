@@ -479,7 +479,7 @@ async function postCareerSiteApplication(req, { params }) {
 				email: normalizedEmail,
 				mobile: application.mobile,
 				zipCode: application.zipCode,
-					linkedinUrl: application.linkedinUrl,
+				linkedinUrl: application.linkedinUrl,
 				resumeFileName: resumeFile?.name || ''
 			});
 
