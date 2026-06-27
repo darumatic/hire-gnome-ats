@@ -17,7 +17,6 @@ const initialForm = {
 	lastName: '',
 	email: '',
 	mobile: '',
-	zipCode: '',
 	linkedinUrl: '',
 	faxNumber: ''
 };
@@ -71,7 +70,6 @@ export default function CareerJobDetailClient({ job }) {
 					form.lastName.trim() &&
 					form.email.trim() &&
 					form.mobile.trim() &&
-					form.zipCode.trim() &&
 					resumeFile &&
 					requiredQuestionsAnswered
 			),
@@ -121,7 +119,6 @@ export default function CareerJobDetailClient({ job }) {
 			payload.set('lastName', form.lastName);
 			payload.set('email', form.email);
 			payload.set('mobile', form.mobile);
-			payload.set('zipCode', form.zipCode);
 			payload.set('linkedinUrl', form.linkedinUrl);
 			payload.set('faxNumber', form.faxNumber);
 			payload.set('startedAtMs', startedAtMs);
@@ -250,15 +247,6 @@ export default function CareerJobDetailClient({ job }) {
 											mobile: formatPhoneInput(event.target.value)
 										}))
 									}
-									required
-								/>
-							</label>
-							<label>
-								<span>Zip Code *</span>
-								<input
-									inputMode="numeric"
-									value={form.zipCode}
-									onChange={(event) => setForm((current) => ({ ...current, zipCode: event.target.value }))}
 									required
 								/>
 							</label>

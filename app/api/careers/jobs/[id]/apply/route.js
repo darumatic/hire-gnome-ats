@@ -53,7 +53,7 @@ const careerApplicationSchema = z.object({
 			message: 'Enter a valid email address.'
 		}),
 	mobile: z.string().trim().min(1, 'Mobile phone is required.'),
-	zipCode: z.string().trim().min(1, 'Zip code is required.'),
+	zipCode: optionalText,
 	linkedinUrl: optionalUrl
 });
 
