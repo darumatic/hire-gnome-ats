@@ -68,7 +68,7 @@ export default function SubmissionsPage() {
 		return activeRows.filter((row) => {
 			const matchesQuery =
 				!q ||
-				`${row.candidateSearchText} ${row.jobOrder} ${row.client} ${row.effectiveStatus} ${row.statusLabel} ${row.originLabel ?? ''} ${row.submittedBy ?? ''}`
+				`${row.candidateSearchText} ${row.jobOrder} ${row.client} ${row.effectiveStatus} ${row.statusLabel} ${row.candidateSourceLabel ?? ''} ${row.originLabel ?? ''} ${row.submittedBy ?? ''}`
 					.toLowerCase()
 					.includes(q);
 			return matchesQuery;
@@ -116,6 +116,7 @@ export default function SubmissionsPage() {
 					client: submission.jobOrder?.client?.name || '-',
 					clientId: submission.jobOrder?.client?.id || null,
 					statusLabel: formatSelectValueLabel(getEffectiveSubmissionStatus(submission)),
+					candidateSourceLabel: submission.candidateSource || '-',
 					originLabel: submissionOriginLabel(submission),
 					clientPortalLabel: submission.isClientVisible ? 'Visible' : 'Hidden',
 					submittedBy: submissionCreatedByLabel(submission),
@@ -190,6 +191,7 @@ export default function SubmissionsPage() {
 				)
 		},
 		{ key: 'statusLabel', label: 'Status' },
+		{ key: 'candidateSourceLabel', label: 'Candidate Source', defaultVisible: false },
 		{ key: 'submittedBy', label: 'Submitted By' },
 		{ key: 'submittedAt', label: 'Submitted At' },
 		{ key: 'updatedAtLabel', label: 'Updated At', defaultVisible: false, getSortValue: (row) => row.updatedAt || '' },

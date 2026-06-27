@@ -498,6 +498,7 @@ export default function CandidateDetailsPage() {
 			jobOrder: submission.jobOrder?.title || '-',
 			client: submission.jobOrder?.client?.name || '-',
 			status: formatSelectValueLabel(getEffectiveSubmissionStatus(submission)),
+			candidateSource: submission.candidateSource || '',
 			createdAt: formatDate(submission.createdAt),
 			createdAtRaw: submission.createdAt || '',
 			createdBy: submissionCreatedByLabel(submission)
@@ -2272,6 +2273,9 @@ export default function CandidateDetailsPage() {
 												<div className="simple-list-actions simple-list-indicators">
 													<div className="submission-chip-stack">
 														<span className="chip">{submission.status}</span>
+														{submission.candidateSource ? (
+															<span className="chip">{submission.candidateSource}</span>
+														) : null}
 														<span
 															className={
 																submissionOriginLabel(submission) === 'Web'

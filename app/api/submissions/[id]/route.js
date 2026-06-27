@@ -129,6 +129,7 @@ async function patchSubmissions_idHandler(req, { params }) {
 			select: {
 				id: true,
 				status: true,
+				candidateSource: true,
 				isClientVisible: true,
 				notes: true,
 				aiWriteUp: true,
@@ -212,6 +213,7 @@ async function patchSubmissions_idHandler(req, { params }) {
 				candidateId: existing.candidateId,
 				jobOrderId: existing.jobOrderId,
 				status: parsed.data.status,
+				candidateSource: parsed.data.candidateSource || null,
 				isClientVisible:
 					typeof parsed.data.isClientVisible === 'boolean'
 						? parsed.data.isClientVisible

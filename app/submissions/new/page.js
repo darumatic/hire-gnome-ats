@@ -12,11 +12,13 @@ import { useToast } from '@/app/components/toast-provider';
 import useUnsavedChangesGuard from '@/app/hooks/use-unsaved-changes-guard';
 import { fetchLookupOptionById } from '@/lib/lookup-client';
 import { formatCandidateStatusLabel, isCandidateQualifiedForPipeline } from '@/lib/candidate-status';
+import { SUBMISSION_CANDIDATE_SOURCE_OPTIONS } from '@/lib/submission-candidate-source-options';
 
 const initialForm = {
 	candidateId: '',
 	jobOrderId: '',
 	status: 'submitted',
+	candidateSource: '',
 	notes: '',
 	customFields: {}
 };
@@ -175,6 +177,19 @@ function NewSubmissionsPageContent() {
 							<option value="offered">Offered</option>
 							<option value="hired">Hired</option>
 							<option value="placed">Placed</option>
+						</select>
+					</FormField>
+					<FormField label="Candidate Source">
+						<select
+							value={form.candidateSource}
+							onChange={(e) => setForm((f) => ({ ...f, candidateSource: e.target.value }))}
+						>
+							<option value="">Select source</option>
+							{SUBMISSION_CANDIDATE_SOURCE_OPTIONS.map((option) => (
+								<option key={option.value} value={option.value}>
+									{option.label}
+								</option>
+							))}
 						</select>
 					</FormField>
 					<FormField label="Notes">
