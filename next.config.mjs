@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	// Allow building into an alternate output dir (e.g. staged deploys) without
+	// disturbing the live .next; defaults to .next for dev/CI/runtime.
+	distDir: process.env.NEXT_DIST_DIR || '.next',
 	reactStrictMode: true,
 	poweredByHeader: false,
 	serverExternalPackages: ['pdf-parse', 'word-extractor', 'mammoth', 'sanitize-html'],
