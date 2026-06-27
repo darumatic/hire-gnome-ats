@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { addScopeToWhere, getActingUser } from '@/lib/access-control';
-import { getCandidateJobOrderScope, validateScopedCandidateAndJobOrder } from '@/lib/related-record-scope';
+import { addScopeToWhere, getActingUser, getEntityScope } from '@/lib/access-control';
+import { validateScopedCandidateAndJobOrder } from '@/lib/related-record-scope';
 import {
 	buildDefaultPlacementCommissionSplits,
 	getPlacementCommissionOwners
@@ -26,13 +26,14 @@ async function getPlacementCommissionDefaultsHandler(req) {
 		jobOrderId
 	});
 
+	const entityScope = getEntityScope(actingUser);
 	const [candidate, jobOrder] = await Promise.all([
 		prisma.candidate.findFirst({
-			where: addScopeToWhere({ id: candidateId }, getCandidateJobOrderScope(actingUser)),
+			where: addScopeToWhere({ id: candidateId }, entityScope),
 			select: { id: true, ownerId: true, ownerUser: { select: placementUserSelect } }
 		}),
 		prisma.jobOrder.findFirst({
-			where: addScopeToWhere({ id: jobOrderId }, getCandidateJobOrderScope(actingUser)),
+			where: addScopeToWhere({ id: jobOrderId }, entityScope),
 			select: {
 				id: true,
 				client: {

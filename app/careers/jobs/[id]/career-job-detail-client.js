@@ -17,9 +17,6 @@ const initialForm = {
 	lastName: '',
 	email: '',
 	mobile: '',
-	zipCode: '',
-	currentJobTitle: '',
-	currentEmployer: '',
 	linkedinUrl: '',
 	faxNumber: ''
 };
@@ -32,9 +29,6 @@ function toStoredFormValue(value) {
 		lastName: String(value?.lastName || ''),
 		email: String(value?.email || ''),
 		mobile: String(value?.mobile || ''),
-		zipCode: String(value?.zipCode || ''),
-		currentJobTitle: String(value?.currentJobTitle || ''),
-		currentEmployer: String(value?.currentEmployer || ''),
 		linkedinUrl: String(value?.linkedinUrl || ''),
 		faxNumber: ''
 	};
@@ -93,7 +87,15 @@ export default function CareerJobDetailClient({ job }) {
 	const [resumeFile, setResumeFile] = useState(null);
 	const [resumeInputKey, setResumeInputKey] = useState(0);
 	const [submitState, setSubmitState] = useState({ submitting: false });
+	const [answers, setAnswers] = useState({});
 	const hasValidLinkedinUrl = isValidOptionalHttpUrl(form.linkedinUrl);
+
+	const questions = Array.isArray(job.applicationQuestions) ? job.applicationQuestions : [];
+
+	const requiredQuestionsAnswered = useMemo(
+		() => questions.filter((q) => q.required).every((q) => String(answers[q.id] || '').trim()),
+		[questions, answers]
+	);
 
 	const canSubmit = useMemo(
 		() =>
@@ -102,12 +104,10 @@ export default function CareerJobDetailClient({ job }) {
 					form.lastName.trim() &&
 					form.email.trim() &&
 					form.mobile.trim() &&
-					form.zipCode.trim() &&
-					form.currentJobTitle.trim() &&
-					form.currentEmployer.trim() &&
-					resumeFile
+					resumeFile &&
+					requiredQuestionsAnswered
 			),
-		[form, resumeFile]
+		[form, resumeFile, requiredQuestionsAnswered]
 	);
 
 	useEffect(() => {
@@ -121,14 +121,11 @@ export default function CareerJobDetailClient({ job }) {
 			// Ignore sessionStorage failures and keep the form usable.
 		}
 	}, [
-		form.currentEmployer,
-		form.currentJobTitle,
 		form.email,
 		form.firstName,
 		form.lastName,
 		form.linkedinUrl,
-		form.mobile,
-		form.zipCode
+		form.mobile
 	]);
 
 	async function onSubmit(event) {
@@ -136,6 +133,10 @@ export default function CareerJobDetailClient({ job }) {
 		if (submitState.submitting) return;
 		if (!canSubmit) {
 			toast.error('Complete all required fields and upload your resume before submitting.');
+			return;
+		}
+		if (!requiredQuestionsAnswered) {
+			toast.error('Please answer all required application questions before submitting.');
 			return;
 		}
 		if (form.linkedinUrl.trim() && !hasValidLinkedinUrl) {
@@ -158,12 +159,15 @@ export default function CareerJobDetailClient({ job }) {
 			payload.set('lastName', form.lastName);
 			payload.set('email', form.email);
 			payload.set('mobile', form.mobile);
-			payload.set('zipCode', form.zipCode);
-			payload.set('currentJobTitle', form.currentJobTitle);
-			payload.set('currentEmployer', form.currentEmployer);
 			payload.set('linkedinUrl', form.linkedinUrl);
 			payload.set('faxNumber', form.faxNumber);
 			payload.set('startedAtMs', startedAtMs);
+			payload.set(
+				'applicationAnswers',
+				JSON.stringify(
+					questions.map((q) => ({ questionId: q.id, answer: String(answers[q.id] || '') }))
+				)
+			);
 			if (resumeFile) {
 				payload.set('resumeFile', resumeFile);
 			}
@@ -217,16 +221,6 @@ export default function CareerJobDetailClient({ job }) {
 							<p>
 								<BriefcaseBusiness aria-hidden="true" />
 								<span>{job.employmentType || 'Role type to be discussed'}</span>
-							</p>
-						</div>
-						<div className="career-detail-highlights">
-							<p>
-								<span>Compensation</span>
-								<strong>{formatCurrencyRange(job.salaryMin, job.salaryMax, job.currency)}</strong>
-							</p>
-							<p>
-								<span>Posted</span>
-								<strong>{formatDate(job.publishedAt || job.openedAt)}</strong>
 							</p>
 						</div>
 					</div>
@@ -298,38 +292,6 @@ export default function CareerJobDetailClient({ job }) {
 									required
 								/>
 							</label>
-							<label>
-								<span>Zip Code *</span>
-								<input
-									inputMode="numeric"
-									value={form.zipCode}
-									onChange={(event) => setForm((current) => ({ ...current, zipCode: event.target.value }))}
-									required
-								/>
-							</label>
-						</div>
-
-						<div className="career-apply-grid-2">
-							<label>
-								<span>Current Title *</span>
-								<input
-									value={form.currentJobTitle}
-									onChange={(event) =>
-										setForm((current) => ({ ...current, currentJobTitle: event.target.value }))
-									}
-									required
-								/>
-							</label>
-							<label>
-								<span>Current Employer *</span>
-								<input
-									value={form.currentEmployer}
-									onChange={(event) =>
-										setForm((current) => ({ ...current, currentEmployer: event.target.value }))
-									}
-									required
-								/>
-							</label>
 						</div>
 
 						<label>
@@ -340,6 +302,27 @@ export default function CareerJobDetailClient({ job }) {
 								onChange={(event) => setForm((current) => ({ ...current, linkedinUrl: event.target.value }))}
 							/>
 						</label>
+
+						{questions.length > 0 ? (
+							<div className="career-apply-questions">
+								{questions.map((q) => (
+									<label key={q.id}>
+										<span>
+											{q.label}
+											{q.required ? ' *' : ''}
+										</span>
+										<textarea
+											rows={3}
+											value={answers[q.id] || ''}
+											onChange={(e) =>
+												setAnswers((current) => ({ ...current, [q.id]: e.target.value }))
+											}
+											required={q.required}
+										/>
+									</label>
+								))}
+							</div>
+						) : null}
 
 						<label>
 							<span>Resume File (PDF, DOC, DOCX) *</span>

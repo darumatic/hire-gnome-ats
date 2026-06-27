@@ -6,6 +6,13 @@ import { getSystemBranding } from '@/lib/system-settings';
 
 export const dynamic = 'force-dynamic';
 
+function safeJsonLd(data) {
+	return JSON.stringify(data)
+		.replace(/</g, '\\u003c')
+		.replace(/>/g, '\\u003e')
+		.replace(/&/g, '\\u0026');
+}
+
 function parseJobId(params) {
 	const value = Number(params?.id);
 	if (!Number.isInteger(value) || value <= 0) return null;
@@ -25,8 +32,6 @@ function inferSchemaEmploymentType(value) {
 function buildJobPostingStructuredData({ baseUrl, siteName, job }) {
 	const description = stripHtmlToText(job.publicDescription) || `${job.title} at ${job.client?.name || siteName}`;
 	const postedAt = job.publishedAt || job.openedAt || null;
-	const hasMin = Number.isFinite(Number(job.salaryMin));
-	const hasMax = Number.isFinite(Number(job.salaryMax));
 	const locationText = String(job.location || '').trim();
 	const isRemote = /\bremote\b/i.test(locationText);
 
@@ -47,7 +52,7 @@ function buildJobPostingStructuredData({ baseUrl, siteName, job }) {
 		identifier: {
 			'@type': 'PropertyValue',
 			name: siteName,
-			value: job.recordId || `JOB-${job.id}`
+			value: `JOB-${job.id}`
 		}
 	};
 
@@ -59,19 +64,6 @@ function buildJobPostingStructuredData({ baseUrl, siteName, job }) {
 			address: {
 				'@type': 'PostalAddress',
 				addressLocality: locationText
-			}
-		};
-	}
-
-	if (hasMin || hasMax) {
-		payload.baseSalary = {
-			'@type': 'MonetaryAmount',
-			currency: job.currency === 'CAD' ? 'CAD' : 'USD',
-			value: {
-				'@type': 'QuantitativeValue',
-				minValue: hasMin ? Number(job.salaryMin) : undefined,
-				maxValue: hasMax ? Number(job.salaryMax) : undefined,
-				unitText: 'YEAR'
 			}
 		};
 	}
@@ -163,7 +155,7 @@ export default async function CareerJobDetailPage({ params }) {
 		<>
 			<script
 				type="application/ld+json"
-				dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+				dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
 			/>
 			<CareerJobDetailClient job={job} />
 		</>

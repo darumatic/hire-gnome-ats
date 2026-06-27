@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { ArrowUpRight, ChevronLeft, ChevronRight, GripVertical, MoreVertical, RefreshCcw, Sparkles, UserPlus } from 'lucide-react';
+import { ArrowUpRight, ChevronLeft, ChevronRight, GripVertical, MoreVertical, Plus, RefreshCcw, Sparkles, Trash2, UserPlus } from 'lucide-react';
 import LookupTypeaheadSelect from '@/app/components/lookup-typeahead-select';
 import AddressTypeaheadInput from '@/app/components/address-typeahead-input';
 import FormField from '@/app/components/form-field';
@@ -45,7 +45,7 @@ import { fetchLookupOptionById } from '@/lib/lookup-client';
 import { toBooleanFlag } from '@/lib/boolean-flag';
 import { buildJobOrderTimeline } from '@/lib/activity-timeline';
 
-const JOB_ORDER_CURRENCIES = ['USD', 'CAD'];
+const JOB_ORDER_CURRENCIES = ['USD', 'CAD', 'AUD'];
 
 const initialForm = {
 	title: '',
@@ -65,6 +65,7 @@ const initialForm = {
 	salaryMin: '',
 	salaryMax: '',
 	publishToCareerSite: false,
+	applicationQuestions: [],
 	divisionId: '',
 	ownerId: '',
 	clientId: '',
@@ -146,6 +147,7 @@ function toForm(row) {
 		salaryMin: row.salaryMin == null ? '' : formatCurrencyInput(String(row.salaryMin), currency),
 		salaryMax: row.salaryMax == null ? '' : formatCurrencyInput(String(row.salaryMax), currency),
 		publishToCareerSite: Boolean(row.publishToCareerSite),
+		applicationQuestions: Array.isArray(row.applicationQuestions) ? row.applicationQuestions : [],
 		divisionId: row.divisionId == null ? '' : String(row.divisionId),
 		ownerId: row.ownerId == null ? '' : String(row.ownerId),
 		clientId: String(row.clientId || ''),
@@ -1507,6 +1509,7 @@ export default function JobOrderDetailsPage() {
 									>
 										<option value="USD">USD</option>
 										<option value="CAD">CAD</option>
+										<option value="AUD">AUD</option>
 									</select>
 								</FormField>
 								<FormField label="Salary Min">
@@ -1668,6 +1671,77 @@ export default function JobOrderDetailsPage() {
 								{!aiAvailable ? (
 									<p className="panel-subtext">Enable OpenAI in Admin Area &gt; System Settings to use this.</p>
 								) : null}
+								<FormField label="Application Questions">
+									<p className="panel-subtext" style={{ marginBottom: '0.5rem' }}>
+										Questions shown to candidates on the public apply form.
+									</p>
+									{form.applicationQuestions.map((q, index) => (
+										<div
+											key={q.id}
+											style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}
+										>
+											<input
+												style={{ flex: 1 }}
+												value={q.label}
+												placeholder="Question text"
+												onChange={(e) => {
+													const label = e.target.value;
+													setForm((f) => ({
+														...f,
+														applicationQuestions: f.applicationQuestions.map((item, i) =>
+															i === index ? { ...item, label } : item
+														)
+													}));
+												}}
+											/>
+											<label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', whiteSpace: 'nowrap' }}>
+												<input
+													type="checkbox"
+													checked={q.required}
+													onChange={(e) => {
+														const required = e.target.checked;
+														setForm((f) => ({
+															...f,
+															applicationQuestions: f.applicationQuestions.map((item, i) =>
+																i === index ? { ...item, required } : item
+															)
+														}));
+													}}
+												/>
+												Required
+											</label>
+											<button
+												type="button"
+												className="icon-button icon-button-danger"
+												title="Remove question"
+												onClick={() =>
+													setForm((f) => ({
+														...f,
+														applicationQuestions: f.applicationQuestions.filter((_, i) => i !== index)
+													}))
+												}
+											>
+												<Trash2 size={14} />
+											</button>
+										</div>
+									))}
+									<button
+										type="button"
+										className="button button-secondary button-sm"
+										onClick={() =>
+											setForm((f) => ({
+												...f,
+												applicationQuestions: [
+													...f.applicationQuestions,
+													{ id: crypto.randomUUID(), label: '', required: false }
+												]
+											}))
+										}
+									>
+										<Plus size={14} />
+										Add Question
+									</button>
+								</FormField>
 							</>
 						) : null}
 					</section>

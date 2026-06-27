@@ -8,6 +8,13 @@ import { getSystemBranding } from '@/lib/system-settings';
 
 export const dynamic = 'force-dynamic';
 
+function safeJsonLd(data) {
+	return JSON.stringify(data)
+		.replace(/</g, '\\u003c')
+		.replace(/>/g, '\\u003e')
+		.replace(/&/g, '\\u0026');
+}
+
 function buildCareersItemListStructuredData({ baseUrl, siteName, jobs }) {
 	return {
 		'@context': 'https://schema.org',
@@ -83,7 +90,7 @@ export default async function CareersPage() {
 		<>
 			<script
 				type="application/ld+json"
-				dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+				dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
 			/>
 			<Suspense
 				fallback={

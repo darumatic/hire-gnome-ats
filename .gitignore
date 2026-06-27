@@ -37,3 +37,8 @@ pnpm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Imported resume data (lives in app storage / server backups, not the repo)
+imports/
+# Deploy-time file backups
+*.bak-2026*

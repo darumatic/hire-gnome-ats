@@ -8,9 +8,10 @@ import { useToast } from '@/app/components/toast-provider';
 import useSystemBranding from '@/app/hooks/use-system-branding';
 import { THEME_OPTIONS } from '@/lib/theme-options';
 import { isValidEmailAddress } from '@/lib/email-validation';
+import { isSafeImageSrc } from '@/lib/url-validation';
 
 const INITIAL_FORM = {
-	siteName: 'Hire Gnome ATS',
+	siteName: 'Darumatic ATS',
 	themeKey: 'classic_blue',
 	firstName: '',
 	lastName: '',
@@ -194,12 +195,14 @@ export default function SetupPage() {
 	}
 
 	const useDefaultBrandPlaque = !logoPreviewUrl && !branding.hasCustomLogo;
+	const brandLogoSrc = logoPreviewUrl || branding.logoUrl;
+	const safeBrandLogoSrc = isSafeImageSrc(brandLogoSrc) ? brandLogoSrc : '/branding/hire-gnome.png';
 
 	return (
 		<section className="auth-page">
 			<article className="auth-card setup-card">
 				<div className={useDefaultBrandPlaque ? 'auth-brand-link brand-plaque' : 'auth-brand-link'}>
-					<img src={logoPreviewUrl || branding.logoUrl} alt={form.siteName || branding.siteName} className="auth-brand-logo" />
+					<img src={safeBrandLogoSrc} alt={form.siteName || branding.siteName} className="auth-brand-logo" />
 				</div>
 				<h1>Initial Setup</h1>
 				<p className="auth-subtitle">Create your system administrator account and base branding.</p>
