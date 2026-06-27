@@ -10,6 +10,7 @@ import { useToast } from '@/app/components/toast-provider';
 import { THEME_OPTIONS } from '@/lib/theme-options';
 import { toBooleanFlag } from '@/lib/boolean-flag';
 import { formatDateTimeAt } from '@/lib/date-format';
+import { isSafeImageSrc } from '@/lib/url-validation';
 
 const initialForm = {
 	siteName: '',
@@ -176,6 +177,7 @@ export default function AdminSettingsPage() {
 
 	const isS3ObjectStorage = form.objectStorageProvider !== 'local';
 	const displayedLogo = logoPreviewUrl || (form.removeLogo ? '/branding/hire-gnome.png' : currentBranding.logoUrl);
+	const safeDisplayedLogo = isSafeImageSrc(displayedLogo) ? displayedLogo : '/branding/hire-gnome.png';
 	const brandingDirty = useMemo(
 		() =>
 			Boolean(logoFile)
@@ -744,7 +746,7 @@ export default function AdminSettingsPage() {
 
 									<div className="branding-preview-card">
 										<p className="branding-preview-label">Preview</p>
-										<img src={displayedLogo} alt={form.siteName || 'Site logo preview'} className="branding-preview-logo" />
+										<img src={safeDisplayedLogo} alt={form.siteName || 'Site logo preview'} className="branding-preview-logo" />
 									</div>
 								</div>
 								<label className="switch-field">

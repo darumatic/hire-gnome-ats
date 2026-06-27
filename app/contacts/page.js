@@ -9,7 +9,6 @@ import EntityTable from '@/app/components/entity-table';
 import SavedListViews from '@/app/components/saved-list-views';
 import TableColumnPicker from '@/app/components/table-column-picker';
 import TableEntityLink from '@/app/components/table-entity-link';
-import { useConfirmDialog } from '@/app/components/confirm-dialog';
 import useArchivedEntities from '@/app/hooks/use-archived-entities';
 import { formatDateTimeAt } from '@/lib/date-format';
 import {

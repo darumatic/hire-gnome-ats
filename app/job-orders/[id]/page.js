@@ -44,6 +44,7 @@ import { formatCurrencyInput, parseCurrencyInput } from '@/lib/currency-input';
 import { fetchLookupOptionById } from '@/lib/lookup-client';
 import { toBooleanFlag } from '@/lib/boolean-flag';
 import { buildJobOrderTimeline } from '@/lib/activity-timeline';
+import { SUBMISSION_CANDIDATE_SOURCE_OPTIONS } from '@/lib/submission-candidate-source-options';
 
 const JOB_ORDER_CURRENCIES = ['USD', 'CAD', 'AUD'];
 
@@ -76,6 +77,7 @@ const initialForm = {
 const initialSubmissionForm = {
 	candidateId: '',
 	status: 'submitted',
+	candidateSource: '',
 	notes: ''
 };
 
@@ -764,6 +766,7 @@ export default function JobOrderDetailsPage() {
 				candidateId: submissionForm.candidateId,
 				jobOrderId: jobOrder.id,
 				status: submissionForm.status,
+				candidateSource: submissionForm.candidateSource,
 				notes: submissionForm.notes
 			})
 		});
@@ -1864,6 +1867,22 @@ export default function JobOrderDetailsPage() {
 										))}
 									</select>
 								</FormField>
+								<FormField label="Candidate Source">
+									<select
+										value={submissionForm.candidateSource}
+										onChange={(e) => {
+											setSubmissionForm((current) => ({ ...current, candidateSource: e.target.value }));
+											setSubmissionState((current) => ({ ...current, error: '', success: '' }));
+										}}
+									>
+										<option value="">Select source</option>
+										{SUBMISSION_CANDIDATE_SOURCE_OPTIONS.map((option) => (
+											<option key={option.value} value={option.value}>
+												{option.label}
+											</option>
+										))}
+									</select>
+								</FormField>
 								<FormField label="Notes">
 									<textarea
 										placeholder="Submission notes"
@@ -1985,6 +2004,11 @@ export default function JobOrderDetailsPage() {
 															{submissionCreatedByLabel(submission)}{' '}
 															@ <span className="meta-emphasis-time">{formatDate(submission.createdAt)}</span>
 														</p>
+														{submission.candidateSource ? (
+															<div className="simple-list-meta">
+																<span className="chip">{submission.candidateSource}</span>
+															</div>
+														) : null}
 														{latestClientFeedback ? (
 															<>
 																<div className="submission-feedback-block">

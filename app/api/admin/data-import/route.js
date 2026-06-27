@@ -29,6 +29,7 @@ import {
 	buildCandidateAttachmentStorageKey,
 	uploadObjectBuffer
 } from '@/lib/object-storage';
+import { normalizeSubmissionCandidateSourceValue } from '@/lib/submission-candidate-source-options';
 import {
 	BULLHORN_CANDIDATE_FILES_MANIFEST_LEGACY_NAMES,
 	BULLHORN_CANDIDATE_FILES_MANIFEST_NAME
@@ -799,6 +800,7 @@ function mapBullhornSubmissionRow(row, context = {}) {
 		jobOrderId,
 		jobOrderTitle,
 		status: toTrimmedString(pickBullhornValue(row, ['status', 'submission status', 'submittal status'])) || 'submitted',
+		candidateSource: normalizeSubmissionCandidateSourceValue(pickBullhornValue(row, ['candidate source', 'applicant source', 'source'])),
 		notes: pickBullhornValue(row, ['notes', 'comment', 'submission notes', 'submittal notes']),
 		customFields
 	};
@@ -1140,6 +1142,7 @@ function mapZohoSubmissionRow(row) {
 		jobOrderId,
 		jobOrderTitle,
 		status: toTrimmedString(pickZohoValue(row, ['submission status', 'status'])) || 'submitted',
+		candidateSource: normalizeSubmissionCandidateSourceValue(pickZohoValue(row, ['candidate source', 'applicant source', 'source'])),
 		notes: pickZohoValue(row, ['notes', 'submission notes', 'comments'])
 	};
 }
@@ -1656,7 +1659,7 @@ async function parseBullhornCandidateAttachmentsFromFormData(manifestValue, form
 	if (!manifestValue) return [];
 	let manifest;
 	try {
-		manifest = JSON.parse(String(manifestValue || '[]'));
+		manifest = JSON.parse(String(manifestValue));
 	} catch {
 		throw new ImportValidationError('Bullhorn candidate attachment manifest is invalid.');
 	}
@@ -3725,6 +3728,7 @@ async function importData(tx, data, actingUser) {
 		}
 		const payload = {
 			status: toTrimmedString(row?.status) || 'submitted',
+			candidateSource: normalizeSubmissionCandidateSourceValue(row?.candidateSource) || null,
 			notes: toTrimmedString(row?.notes),
 			customFields: normalizeCustomFieldValues(row?.customFields),
 			candidateId,

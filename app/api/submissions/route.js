@@ -111,6 +111,7 @@ async function postSubmissionsHandler(req) {
 					candidateId: parsed.data.candidateId,
 					jobOrderId: parsed.data.jobOrderId,
 					status: parsed.data.status,
+					candidateSource: parsed.data.candidateSource || null,
 					submissionPriority: nextPriority,
 					isClientVisible: parsed.data.isClientVisible ?? true,
 					notes: parsed.data.notes || null,

@@ -17,8 +17,12 @@
 		"start": "NODE_ENV=production next start",
 		"ci:preflight": "node scripts/preflight.cjs",
 		"ci:build": "npm run build",
+		"ci:lint": "eslint app lib",
 		"ci:smoke": "node scripts/test-permissions-api.cjs",
+		"ci:smoke:careers": "node scripts/test-career-site.cjs",
 		"ci:test": "npm run ci:preflight && npm run ci:build",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"test:permissions": "node scripts/test-permissions-api.cjs",
 		"prisma:generate": "prisma generate",
 		"prisma:migrate": "prisma migrate dev",
@@ -44,12 +48,12 @@
 		"jszip": "^3.10.1",
 		"lucide-react": "^0.577.0",
 		"mammoth": "^1.12.0",
-		"mysql2": "^3.20.0",
-		"next": "^16.1.7",
-		"nodemailer": "^8.0.2",
+		"mysql2": "^3.22.5",
+		"next": "^16.3.0-preview.4",
+		"nodemailer": "^9.0.1",
 		"pdf-parse": "^2.4.5",
-		"react": "^19.2.4",
-		"react-dom": "^19.2.4",
+		"react": "^19.2.7",
+		"react-dom": "^19.2.7",
 		"react-markdown": "^10.1.0",
 		"remark-gfm": "^4.0.1",
 		"sanitize-html": "^2.17.5",
@@ -58,6 +62,12 @@
 		"zod": "^3.25.76"
 	},
 	"devDependencies": {
-		"prisma": "^6.19.2"
+		"eslint": "^9.39.4",
+		"eslint-config-next": "^16.3.0-preview.4",
+		"prisma": "^6.19.2",
+		"vitest": "^4.1.9"
+	},
+	"overrides": {
+		"uuid": "^11.1.1"
 	}
 }

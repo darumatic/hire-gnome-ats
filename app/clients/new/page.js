@@ -14,7 +14,7 @@ import { useToast } from '@/app/components/toast-provider';
 import useUnsavedChangesGuard from '@/app/hooks/use-unsaved-changes-guard';
 import { INDUSTRY_OPTIONS } from '@/app/constants/industry-options';
 import { isValidOptionalHttpUrl } from '@/lib/url-validation';
-import { CLIENT_STATUS_OPTIONS, normalizeClientStatusValue } from '@/lib/client-status-options';
+import { CLIENT_STATUS_OPTIONS } from '@/lib/client-status-options';
 import { fetchUnassignedDivisionOption } from '@/lib/default-division-client';
 
 const initialForm = {

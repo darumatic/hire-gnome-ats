@@ -676,6 +676,7 @@ model Submission {
 	id         Int      @id @default(autoincrement())
 	recordId   String   @unique
 	status     String   @default("submitted")
+	candidateSource String?
 	submissionPriority Int @default(0)
 	isClientVisible Boolean @default(true)
 	notes      String?   @db.Text

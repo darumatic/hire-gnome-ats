@@ -87,7 +87,6 @@ const prisma = new PrismaClient().$extends({
 
 const PERSON_EMAIL_DOMAIN = 'demoats.com';
 const DIVISION_PREFIX = 'HG Seed - ';
-const DEFAULT_LOGIN_PASSWORD = String(process.env.AUTH_DEFAULT_PASSWORD || 'Welcome123!').trim() || 'Welcome123!';
 const DEMO_SITE_NAME = 'Hire Gnome ATS';
 const DEMO_THEME_KEY = 'classic_blue';
 
@@ -120,7 +119,7 @@ const INDUSTRY_OPTIONS = [
 const CLIENT_STATUSES = ['Prospect', 'Active', 'Active + Verified', 'Inactive'];
 
 const CANDIDATE_STATUSES = ['new', 'in_review', 'qualified', 'submitted', 'interview', 'offered'];
-const JOB_STATUSES = ['open', 'on_hold', 'open'];
+const JOB_STATUSES = ['open', 'on_hold', 'closed'];
 const SUBMISSION_STATUSES = ['submitted', 'under_review', 'qualified', 'interview', 'offered'];
 const INTERVIEW_STATUSES = ['scheduled', 'completed'];
 const INTERVIEW_TYPES = ['phone', 'video', 'in_person'];
@@ -335,17 +334,6 @@ const JOB_ORDER_TITLES = [
 	'Implementation Consultant'
 ];
 
-const JOB_LOCATIONS = [
-	'Remote',
-	'Hybrid - Austin, TX',
-	'Hybrid - Chicago, IL',
-	'On-site - Denver, CO',
-	'Hybrid - Atlanta, GA',
-	'On-site - Charlotte, NC',
-	'Hybrid - Nashville, TN',
-	'Remote'
-];
-
 const MARKET_LOCATIONS = [
 	{ city: 'Austin', state: 'TX', zipCode: '78701' },
 	{ city: 'Dallas', state: 'TX', zipCode: '75201' },
@@ -397,7 +385,7 @@ function buildUniqueSeedName({ firstNames, lastNames, index, usedNames }) {
 	throw new Error('Unable to generate a unique seeded name.');
 }
 
-function buildSeedUserEmail(userSeed, index, state) {
+function assignAndBuildSeedUserEmail(userSeed, index, state) {
 	if (userSeed?.role === 'ADMINISTRATOR' && !state.adminAssigned) {
 		state.adminAssigned = true;
 		return `admin@${PERSON_EMAIL_DOMAIN}`;
@@ -1030,7 +1018,7 @@ async function main() {
 			data: {
 				firstName: userSeed.firstName,
 				lastName: userSeed.lastName,
-				email: buildSeedUserEmail(userSeed, i, userEmailState),
+				email: assignAndBuildSeedUserEmail(userSeed, i, userEmailState),
 				role: userSeed.role,
 				divisionId: division?.id ?? null,
 				isActive: true
@@ -1412,10 +1400,10 @@ async function main() {
 						status: pick(SUBMISSION_STATUSES, i + j),
 						notes: 'Submitted with updated resume, compensation targets, and interview availability.',
 						createdByUserId: createdByUser?.id ?? null,
-					createdAt: submissionCreatedAt,
-					updatedAt: submissionUpdatedAt
-				}
-			});
+						createdAt: submissionCreatedAt,
+						updatedAt: submissionUpdatedAt
+					}
+				});
 			submissionCount += 1;
 			seededSubmissions.push({
 				id: submission.id,
@@ -1595,7 +1583,9 @@ async function main() {
 
 		if (jobSubmissions[1] && i % 4 === 0) {
 			const latestPassAt = addHours(accessCreatedAt, 10 + (i % 14));
-			const nextPriority = (jobSubmissions[jobSubmissions.length - 1]?.submissionPriority || jobSubmissions[1].submissionPriority) + 1;
+			const fallbackPriority = jobSubmissions[1].submissionPriority;
+			const lastSubmissionPriority = jobSubmissions[jobSubmissions.length - 1]?.submissionPriority ?? fallbackPriority;
+			const nextPriority = lastSubmissionPriority + 1;
 			await prisma.submission.update({
 				where: { id: jobSubmissions[1].id },
 				data: {
@@ -1653,7 +1643,7 @@ async function main() {
 	if (recruiterUser) {
 		console.log(`Recruiter login: ${recruiterUser.email}`);
 	}
-	console.log(`Login password for seeded users: ${DEFAULT_LOGIN_PASSWORD}`);
+	console.log('Login password for seeded users: see AUTH_DEFAULT_PASSWORD in your .env (defaults to "Welcome123!" if unset).');
 }
 
 main()

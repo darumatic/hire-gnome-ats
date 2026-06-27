@@ -9,24 +9,6 @@ const PAGE_SIZE_STORAGE_KEY = 'hg-list-page-size';
 const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
-function formatCurrencyRange(min, max, currency = 'USD') {
-	const hasMin = Number.isFinite(Number(min));
-	const hasMax = Number.isFinite(Number(max));
-	if (!hasMin && !hasMax) return 'Compensation discussed during interview.';
-
-	const formatter = new Intl.NumberFormat('en-US', {
-		style: 'currency',
-		currency: currency === 'CAD' ? 'CAD' : 'USD',
-		maximumFractionDigits: 0
-	});
-
-	if (hasMin && hasMax) {
-		return `${formatter.format(Number(min))} - ${formatter.format(Number(max))}`;
-	}
-	if (hasMin) return `${formatter.format(Number(min))}+`;
-	return `Up to ${formatter.format(Number(max))}`;
-}
-
 function formatDate(value) {
 	if (!value) return 'Recently posted';
 	const parsed = new Date(value);
