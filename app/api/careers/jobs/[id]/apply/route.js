@@ -288,7 +288,7 @@ async function parseApplicationInput(req) {
 				email: asTrimmedString(formData.get('email')),
 				mobile: asTrimmedString(formData.get('mobile')),
 				zipCode: asTrimmedString(formData.get('zipCode')),
-					linkedinUrl: asTrimmedString(formData.get('linkedinUrl')),
+				linkedinUrl: asTrimmedString(formData.get('linkedinUrl')),
 				applicationAnswers: parseApplicationAnswers(asTrimmedString(formData.get('applicationAnswers'))),
 				[HONEYPOT_FIELD]: asTrimmedString(formData.get(HONEYPOT_FIELD)),
 				[FORM_STARTED_AT_FIELD]: asTrimmedString(formData.get(FORM_STARTED_AT_FIELD))
@@ -479,7 +479,7 @@ async function postCareerSiteApplication(req, { params }) {
 				email: normalizedEmail,
 				mobile: application.mobile,
 				zipCode: application.zipCode,
-					linkedinUrl: application.linkedinUrl,
+				linkedinUrl: application.linkedinUrl,
 				resumeFileName: resumeFile?.name || ''
 			});
 
